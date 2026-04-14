@@ -18,87 +18,224 @@
     BigDecimal saldo = totalReceitas.subtract(totalDespesas);
     String corSaldo = saldo.compareTo(BigDecimal.ZERO) >= 0 ? "#4ade80" : "#f87171";
 %>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Lançamentos - Sistema Financeiro</title>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
         header {
             background: rgba(255,255,255,0.04);
             border-bottom: 1px solid rgba(255,255,255,0.08);
-            padding: 0 32px; display: flex;
-            align-items: center; justify-content: space-between; height: 64px;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
         }
+
         .brand { font-size: 18px; font-weight: 700; color: #fff; }
+
         .user-info { display: flex; align-items: center; gap: 16px; }
         .user-info span { color: rgba(255,255,255,0.6); font-size: 14px; }
-        .logout {
-            background: rgba(239,68,68,0.15); color: #fca5a5;
+
+        .btn-logout {
+            background: rgba(239,68,68,0.15);
+            color: #fca5a5;
             border: 1px solid rgba(239,68,68,0.3);
-            padding: 7px 16px; border-radius: 6px;
-            text-decoration: none; font-size: 13px;
+            padding: 7px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
         }
+
         main { padding: 32px; max-width: 1200px; margin: 0 auto; }
-        h2 { font-size: 22px; font-weight: 700; margin-bottom: 24px; color: #fff; }
-        .cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-bottom: 32px; }
+
+        .main-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        h2 { font-size: 22px; font-weight: 700; color: #fff; }
+
+        .btn-novo {
+            background: rgba(74,222,128,0.15);
+            color: #4ade80;
+            border: 1px solid rgba(74,222,128,0.3);
+            padding: 7px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
         .card {
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px; padding: 24px;
+            border-radius: 12px;
+            padding: 24px;
         }
-        .card-label { font-size: 12px; color: rgba(255,255,255,0.5);
-                      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+
+        .card-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
         .card-value { font-size: 26px; font-weight: 700; }
+
         .table-wrapper {
             background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px; overflow: hidden;
+            border-radius: 12px;
+            overflow: hidden;
         }
+
         .table-header {
             padding: 20px 24px;
             border-bottom: 1px solid rgba(255,255,255,0.08);
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+
         .table-header h3 { font-size: 15px; font-weight: 600; }
         .count { font-size: 13px; color: rgba(255,255,255,0.4); }
+
         table { width: 100%; border-collapse: collapse; }
+
         thead th {
-            padding: 12px 20px; font-size: 11px; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 1px;
+            padding: 12px 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             color: rgba(255,255,255,0.4);
-            background: rgba(255,255,255,0.03); text-align: left;
+            background: rgba(255,255,255,0.03);
+            text-align: left;
         }
+
         tbody tr { border-top: 1px solid rgba(255,255,255,0.05); }
         tbody tr:hover { background: rgba(255,255,255,0.04); }
         td { padding: 14px 20px; font-size: 14px; }
+
         .id-col { color: rgba(255,255,255,0.3); font-size: 12px; }
         .valor-receita { color: #4ade80; font-weight: 600; }
         .valor-despesa { color: #f87171; font-weight: 600; }
+
         .badge {
-            display: inline-block; padding: 3px 10px;
-            border-radius: 20px; font-size: 11px; font-weight: 600;
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
         }
-        .badge-receita   { background: rgba(74,222,128,0.15); color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
+
+        .badge-receita   { background: rgba(74,222,128,0.15);  color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
         .badge-despesa   { background: rgba(248,113,113,0.15); color: #f87171; border: 1px solid rgba(248,113,113,0.3); }
         .badge-efetivado { background: rgba(59,130,246,0.15);  color: #93c5fd; border: 1px solid rgba(59,130,246,0.3); }
         .badge-aberto    { background: rgba(234,179,8,0.15);   color: #fde047; border: 1px solid rgba(234,179,8,0.3); }
         .badge-cancelado { background: rgba(100,116,139,0.15); color: #94a3b8; border: 1px solid rgba(100,116,139,0.3); }
+
+        .btn-acao {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+            margin-right: 4px;
+        }
+
+        .btn-editar  { background: rgba(59,130,246,0.15); color: #93c5fd; border: 1px solid rgba(59,130,246,0.3); }
+        .btn-excluir { background: rgba(239,68,68,0.15);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+
+        .filtro-form {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filtro-input {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+        }
+
+        .filtro-input option {
+            color: #000;
+        }
     </style>
 </head>
+
 <body>
+
 <header>
     <div class="brand">💰 FinançasPro</div>
     <div class="user-info">
         <span>Olá, <strong><%= usuario.getNome() %></strong></span>
-        <a href="${pageContext.request.contextPath}/logout" class="logout">Sair</a>
+        <a href="${pageContext.request.contextPath}/logout" class="btn-logout">Sair</a>
     </div>
 </header>
 
 <main>
-    <h2>Painel de Lançamentos</h2>
+
+    <div class="main-top">
+        <h2>Painel de Lançamentos</h2>
+
+        <form method="get" action="${pageContext.request.contextPath}/lancamentos" class="filtro-form">
+            <select name="situacao" class="filtro-input">
+                <option value="">Todas as situações</option>
+                <option value="ABERTO" <%= "ABERTO".equals(request.getAttribute("filtroSituacao")) ? "selected" : "" %>>Aberto</option>
+                <option value="EFETIVADO" <%= "EFETIVADO".equals(request.getAttribute("filtroSituacao")) ? "selected" : "" %>>Efetivado</option>
+            </select>
+
+            <input type="date"
+                   name="data"
+                   class="filtro-input"
+                   value="<%= request.getAttribute("filtroData") != null ? request.getAttribute("filtroData") : "" %>">
+
+            <button type="submit" class="btn-novo">Filtrar</button>
+
+            <a href="${pageContext.request.contextPath}/lancamentos" class="btn-logout">Limpar</a>
+        </form>
+
+        <a href="${pageContext.request.contextPath}/lancamentos?acao=novo" class="btn-novo">
+            + Novo Lançamento
+        </a>
+
+        <a href="${pageContext.request.contextPath}/lancamentos/pdf?situacao=<%= request.getAttribute("filtroSituacao") != null ? request.getAttribute("filtroSituacao") : "" %>&data=<%= request.getAttribute("filtroData") != null ? request.getAttribute("filtroData") : "" %>" class="btn-novo">
+            Exportar PDF
+        </a>
+    </div>
 
     <div class="cards">
         <div class="card">
@@ -126,12 +263,18 @@
             <h3>Lista de Lançamentos</h3>
             <span class="count"><%= lancamentos.size() %> registros</span>
         </div>
+
         <table>
             <thead>
-                <tr>
-                    <th>#</th><th>Descrição</th><th>Data</th>
-                    <th>Valor</th><th>Tipo</th><th>Situação</th>
-                </tr>
+            <tr>
+                <th>#</th>
+                <th>Descrição</th>
+                <th>Data</th>
+                <th>Valor</th>
+                <th>Tipo</th>
+                <th>Situação</th>
+                <th>Ações</th>
+            </tr>
             </thead>
             <tbody>
             <% for (Lancamento l : lancamentos) {
@@ -140,18 +283,29 @@
                 String valorClass = "RECEITA".equals(l.getTipoLancamento()) ? "valor-receita" : "valor-despesa";
                 String sinal      = "RECEITA".equals(l.getTipoLancamento()) ? "+" : "-";
             %>
-                <tr>
-                    <td class="id-col"><%= l.getId() %></td>
-                    <td><%= l.getDescricao() %></td>
-                    <td><%= l.getDataLancamento().format(fmt) %></td>
-                    <td class="<%= valorClass %>"><%= sinal %> R$ <%= String.format("%,.2f", l.getValor()) %></td>
-                    <td><span class="badge badge-<%= tipoClass %>"><%= l.getTipoLancamento() %></span></td>
-                    <td><span class="badge badge-<%= sitClass %>"><%= l.getSituacao() %></span></td>
-                </tr>
+            <tr>
+                <td class="id-col"><%= l.getId() %></td>
+                <td><%= l.getDescricao() %></td>
+                <td><%= l.getDataLancamento().format(fmt) %></td>
+                <td class="<%= valorClass %>"><%= sinal %> R$ <%= String.format("%,.2f", l.getValor()) %></td>
+                <td><span class="badge badge-<%= tipoClass %>"><%= l.getTipoLancamento() %></span></td>
+                <td><span class="badge badge-<%= sitClass %>"><%= l.getSituacao() %></span></td>
+                <td>
+                    <a class="btn-acao btn-editar"
+                       href="${pageContext.request.contextPath}/lancamentos?acao=editar&id=<%= l.getId() %>">
+                        Editar
+                    </a>
+                    <a class="btn-acao btn-excluir"
+                       href="${pageContext.request.contextPath}/lancamentos?acao=deletar&id=<%= l.getId() %>">
+                        Excluir
+                    </a>
+                </td>
+            </tr>
             <% } %>
             </tbody>
         </table>
     </div>
+
 </main>
 </body>
 </html>
