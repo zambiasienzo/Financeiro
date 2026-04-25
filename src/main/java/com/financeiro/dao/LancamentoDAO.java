@@ -96,17 +96,21 @@ public class LancamentoDAO {
         }
         return null;
     }
-    public List<Lancamento> filtrar(String situacao, java.time.LocalDate data) throws SQLException {
+    public List<Lancamento> filtrar(String dataInicio, String dataFim, String situacao) throws SQLException {
         List<Lancamento> lista = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder("SELECT * FROM lancamento WHERE 1=1");
 
-        if (situacao != null && !situacao.isEmpty()) {
-            sql.append(" AND situacao = ?");
+        if (dataInicio != null && !dataInicio.isEmpty()) {
+            sql.append(" AND data_lancamento >= ?");
         }
 
-        if (data != null) {
-            sql.append(" AND data_lancamento = ?");
+        if (dataFim != null && !dataFim.isEmpty()) {
+            sql.append(" AND data_lancamento <= ?");
+        }
+
+        if (situacao != null && !situacao.isEmpty()) {
+            sql.append(" AND situacao = ?");
         }
 
         sql.append(" ORDER BY data_lancamento DESC");
@@ -116,12 +120,16 @@ public class LancamentoDAO {
 
             int i = 1;
 
-            if (situacao != null && !situacao.isEmpty()) {
-                ps.setString(i++, situacao);
+            if (dataInicio != null && !dataInicio.isEmpty()) {
+                ps.setDate(i++, Date.valueOf(dataInicio));
             }
 
-            if (data != null) {
-                ps.setDate(i++, Date.valueOf(data));
+            if (dataFim != null && !dataFim.isEmpty()) {
+                ps.setDate(i++, Date.valueOf(dataFim));
+            }
+
+            if (situacao != null && !situacao.isEmpty()) {
+                ps.setString(i++, situacao);
             }
 
             try (ResultSet rs = ps.executeQuery()) {

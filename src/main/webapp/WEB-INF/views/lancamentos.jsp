@@ -218,10 +218,13 @@
                 <option value="EFETIVADO" <%= "EFETIVADO".equals(request.getAttribute("filtroSituacao")) ? "selected" : "" %>>Efetivado</option>
             </select>
 
-            <input type="date"
-                   name="data"
+            <input type="date" name="dataInicio"
                    class="filtro-input"
-                   value="<%= request.getAttribute("filtroData") != null ? request.getAttribute("filtroData") : "" %>">
+                   value="<%= request.getAttribute("filtroDataInicio") != null ? request.getAttribute("filtroDataInicio") : "" %>">
+
+            <input type="date" name="dataFim"
+                   class="filtro-input"
+                   value="<%= request.getAttribute("filtroDataFim") != null ? request.getAttribute("filtroDataFim") : "" %>">
 
             <button type="submit" class="btn-novo">Filtrar</button>
 
@@ -232,7 +235,11 @@
             + Novo Lançamento
         </a>
 
-        <a href="${pageContext.request.contextPath}/lancamentos/pdf?situacao=<%= request.getAttribute("filtroSituacao") != null ? request.getAttribute("filtroSituacao") : "" %>&data=<%= request.getAttribute("filtroData") != null ? request.getAttribute("filtroData") : "" %>" class="btn-novo">
+        <a href="${pageContext.request.contextPath}/lancamentos/pdf
+?situacao=<%= request.getAttribute("filtroSituacao") != null ? request.getAttribute("filtroSituacao") : "" %>
+&dataInicio=<%= request.getAttribute("filtroDataInicio") != null ? request.getAttribute("filtroDataInicio") : "" %>
+&dataFim=<%= request.getAttribute("filtroDataFim") != null ? request.getAttribute("filtroDataFim") : "" %>"
+           class="btn-novo">
             Exportar PDF
         </a>
     </div>

@@ -45,24 +45,26 @@ public class LancamentoServlet extends HttpServlet {
 
             } else {
                 String situacao = req.getParameter("situacao");
-                String dataStr = req.getParameter("data");
+                String dataInicio = req.getParameter("dataInicio");
+                String dataFim = req.getParameter("dataFim");
 
                 List<Lancamento> lista;
 
-                if ((situacao != null && !situacao.isEmpty()) || (dataStr != null && !dataStr.isEmpty())) {
-                    java.time.LocalDate data = (dataStr != null && !dataStr.isEmpty())
-                            ? java.time.LocalDate.parse(dataStr)
-                            : null;
+                if ((situacao != null && !situacao.isEmpty()) ||
+                        (dataInicio != null && !dataInicio.isEmpty()) ||
+                        (dataFim != null && !dataFim.isEmpty())) {
 
-                    lista = dao.filtrar(situacao, data);
+                    lista = dao.filtrar(dataInicio, dataFim, situacao);
+
+                    req.setAttribute("filtroSituacao", situacao);
+                    req.setAttribute("filtroDataInicio", dataInicio);
+                    req.setAttribute("filtroDataFim", dataFim);
+
                 } else {
                     lista = dao.listarTodos();
                 }
 
                 req.setAttribute("lancamentos", lista);
-                req.setAttribute("filtroSituacao", situacao);
-                req.setAttribute("filtroData", dataStr);
-
                 req.getRequestDispatcher("/WEB-INF/views/lancamentos.jsp").forward(req, resp);
             }
 

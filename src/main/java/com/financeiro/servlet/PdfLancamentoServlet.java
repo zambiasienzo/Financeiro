@@ -34,16 +34,17 @@ public class PdfLancamentoServlet extends HttpServlet {
             LancamentoDAO dao = new LancamentoDAO();
 
             String situacao = req.getParameter("situacao");
-            String dataStr = req.getParameter("data");
+            String dataInicio = req.getParameter("dataInicio");
+            String dataFim = req.getParameter("dataFim");
 
             List<Lancamento> lista;
 
-            if ((situacao != null && !situacao.isEmpty()) || (dataStr != null && !dataStr.isEmpty())) {
-                LocalDate data = (dataStr != null && !dataStr.isEmpty())
-                        ? LocalDate.parse(dataStr)
-                        : null;
+            if ((situacao != null && !situacao.isEmpty()) ||
+                    (dataInicio != null && !dataInicio.isEmpty()) ||
+                    (dataFim != null && !dataFim.isEmpty())) {
 
-                lista = dao.filtrar(situacao, data);
+                lista = dao.filtrar(dataInicio, dataFim, situacao);
+
             } else {
                 lista = dao.listarTodos();
             }
@@ -59,8 +60,12 @@ public class PdfLancamentoServlet extends HttpServlet {
                 document.add(new Paragraph("Filtro situação: " + situacao));
             }
 
-            if (dataStr != null && !dataStr.isEmpty()) {
-                document.add(new Paragraph("Filtro data: " + dataStr));
+            if (dataInicio != null && !dataInicio.isEmpty()) {
+                document.add(new Paragraph("Data início: " + dataInicio));
+            }
+
+            if (dataFim != null && !dataFim.isEmpty()) {
+                document.add(new Paragraph("Data fim: " + dataFim));
             }
 
             document.add(new Paragraph(" "));

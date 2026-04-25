@@ -40,7 +40,7 @@ public class LancamentoDAOTest {
 
         assertNotNull(encontrado);
 
-        // 🔥 limpa depois do teste
+
         dao.deletar(encontrado.getId());
     }
 
@@ -58,7 +58,7 @@ public class LancamentoDAOTest {
     @Test
     void filtrarPorSituacaoDeveRetornarApenasRegistrosDaSituacao() throws Exception {
         LancamentoDAO dao = new LancamentoDAO();
-        List<Lancamento> lista = dao.filtrar("ABERTO", null);
+        List<Lancamento> lista = dao.filtrar(null, null, "ABERTO");
 
         for (Lancamento l : lista) {
             assertEquals("ABERTO", l.getSituacao());
@@ -68,7 +68,7 @@ public class LancamentoDAOTest {
     @Test
     void filtrarPorDataNaoDeveRetornarNulo() throws Exception {
         LancamentoDAO dao = new LancamentoDAO();
-        List<Lancamento> lista = dao.filtrar(null, LocalDate.now());
+        List<Lancamento> lista = dao.filtrar("2026-04-01", "2026-04-10", null);
         assertNotNull(lista);
     }
 }
