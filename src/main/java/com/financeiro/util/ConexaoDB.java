@@ -5,9 +5,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConexaoDB {
-    private static final String URL  = "jdbc:postgresql://localhost:5432/financeiro";
-    private static final String USER = "postgres";
-    private static final String PASS = "postgres";
+    private static final String URL  = "jdbc:postgresql://db:5432/financeiro_homolog";
+    private static final String USER = "user";
+    private static final String PASS = "pass";
 
     static {
         try {
