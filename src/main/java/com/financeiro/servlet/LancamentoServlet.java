@@ -2,12 +2,13 @@ package com.financeiro.servlet;
 
 import com.financeiro.dao.LancamentoDAO;
 import com.financeiro.model.Lancamento;
-import com.financeiro.model.Usuario;
 import com.financeiro.service.EmailService;
-
-import javax.servlet.*;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 

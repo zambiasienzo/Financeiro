@@ -3,7 +3,10 @@ package com.financeiro.dao;
 import com.financeiro.model.Usuario;
 import com.financeiro.util.ConexaoDB;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class UsuarioDAO {
 
