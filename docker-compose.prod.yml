@@ -1,0 +1,29 @@
+services:
+
+  db:
+    image: postgres:15
+    container_name: db_prod
+    environment:
+      POSTGRES_DB: financeiro_prod
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  app:
+    image: tomcat:9
+    container_name: app_prod
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./app/financeiro.war:/usr/local/tomcat/webapps/financeiro.war
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=financeiro_prod
+      - DB_USER=user
+      - DB_PASS=pass
+    depends_on:
+      - db
