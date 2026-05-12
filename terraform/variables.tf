@@ -11,3 +11,12 @@ variable "vm_password" {
   type        = string
   sensitive   = true
 }
+variable "jenkins_admin_user" {
+  default = "admin"
+}
+
+variable "jenkins_admin_password" {
+  description = "Senha do usuário admin do Jenkins"
+  type        = string
+  sensitive   = true
+}
