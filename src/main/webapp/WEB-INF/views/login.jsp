@@ -1,4 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    String ambiente = System.getenv("AMBIENTE");
+    if (ambiente == null || ambiente.isEmpty()) {
+        ambiente = "LOCAL";
+    }
+
+    String corAmbiente = "PRODUÇÃO".equals(ambiente) ? "#16a34a" : "#f59e0b";
+%>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -60,6 +68,11 @@
     </style>
 </head>
 <body>
+<div style="position:absolute; top:0; left:0; width:100%;
+        background:<%= corAmbiente %>; color:white;
+        padding:10px; text-align:center; font-weight:bold;">
+    Ambiente: <%= ambiente %>
+</div>
 <div class="card">
     <div class="logo">
         <div class="logo-icon">💰</div>

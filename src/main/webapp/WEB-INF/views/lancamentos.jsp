@@ -17,6 +17,7 @@
     }
     BigDecimal saldo = totalReceitas.subtract(totalDespesas);
     String corSaldo = saldo.compareTo(BigDecimal.ZERO) >= 0 ? "#4ade80" : "#f87171";
+
     String ambiente = System.getenv("AMBIENTE");
     if (ambiente == null || ambiente.isEmpty()) {
         ambiente = "LOCAL";
