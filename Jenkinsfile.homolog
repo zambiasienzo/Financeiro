@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clonar projeto') {
+            steps {
+                git branch: 'main', url: 'https://github.com/zambiasienzo/Financeiro.git'
+            }
+        }
+
+        stage('Linter - Checkstyle') {
+            steps {
+                sh 'mvn checkstyle:check'
+            }
+        }
+
+        stage('Mess Detector - PMD') {
+            steps {
+                sh 'mvn pmd:check'
+            }
+        }
+
+        stage('Build e Testes') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Preparar WAR') {
+            steps {
+                sh 'mkdir -p app'
+                sh 'cp target/financeiro.war app/financeiro.war'
+            }
+        }
+
+        stage('Deploy Homologacao') {
+            steps {
+                sh 'docker rm -f app_homolog db_homolog || true'
+                sh 'docker-compose -p financeiro_homolog -f docker-compose.homolog.yml up -d'
+            }
+        }
+
+        stage('Verificar containers') {
+            steps {
+                sh 'docker ps'
+            }
+        }
+    }
+}
