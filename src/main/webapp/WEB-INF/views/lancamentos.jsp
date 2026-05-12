@@ -17,6 +17,12 @@
     }
     BigDecimal saldo = totalReceitas.subtract(totalDespesas);
     String corSaldo = saldo.compareTo(BigDecimal.ZERO) >= 0 ? "#4ade80" : "#f87171";
+    String ambiente = System.getenv("AMBIENTE");
+    if (ambiente == null || ambiente.isEmpty()) {
+        ambiente = "LOCAL";
+    }
+
+    String corAmbiente = "PRODUÇÃO".equals(ambiente) ? "#16a34a" : "#f59e0b";
 %>
 
 <!DOCTYPE html>
@@ -34,6 +40,7 @@
             color: #e2e8f0;
             min-height: 100vh;
         }
+
 
         header {
             background: rgba(255,255,255,0.04);
@@ -197,7 +204,9 @@
 </head>
 
 <body>
-
+<div style="background:<%= corAmbiente %>; color:white; padding:10px; text-align:center; font-weight:bold;">
+    Ambiente: <%= ambiente %>
+</div>
 <header>
     <div class="brand">💰 FinançasPro</div>
     <div class="user-info">

@@ -25,5 +25,6 @@ services:
       - DB_NAME=financeiro_prod
       - DB_USER=user
       - DB_PASS=pass
+      - AMBIENTE=PRODUÇÃO
     depends_on:
       - db
