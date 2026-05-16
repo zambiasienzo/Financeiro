@@ -35,7 +35,7 @@ pipeline {
 
         stage('Deploy Producao') {
             steps {
-                sh 'docker rm -f app_prod db_prod || true'
+                sh 'docker rm -f app_prod || true'
                 sh 'docker-compose -p financeiro_prod -f docker-compose.prod.yml up -d'
             }
         }

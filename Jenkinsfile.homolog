@@ -35,7 +35,7 @@ pipeline {
 
         stage('Deploy Homologacao') {
             steps {
-                sh 'docker rm -f app_homolog db_homolog || true'
+                sh 'docker rm -f app_homolog || true'
                 sh 'docker-compose -p financeiro_homolog -f docker-compose.homolog.yml up -d'
             }
         }
