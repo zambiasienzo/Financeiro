@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     stages {
+
         stage('Clonar projeto') {
             steps {
                 git branch: 'main', url: 'https://github.com/zambiasienzo/Financeiro.git'
@@ -20,8 +21,19 @@ pipeline {
             }
         }
 
+        stage('Subir Banco Homologação') {
+            steps {
+                echo 'Subindo o Docker do banco de homologação...'
+                sh 'docker-compose -f docker-compose.homolog.yml up -d db'
+
+                // aguardar o banco iniciar completamente
+                sh 'sleep 15'
+            }
+        }
+
         stage('Build e Testes') {
             steps {
+                echo 'Rodando build e testes contra o banco da homologação...'
                 sh 'mvn clean package'
             }
         }
@@ -33,10 +45,11 @@ pipeline {
             }
         }
 
-        stage('Deploy Homologacao') {
+        stage('Deploy Homologação') {
             steps {
+                echo 'Subindo aplicação no Docker de homologação...'
                 sh 'docker rm -f app_homolog || true'
-                sh 'docker-compose -p financeiro_homolog -f docker-compose.homolog.yml up -d'
+                sh 'docker-compose -p financeiro_homolog -f docker-compose.homolog.yml up -d app'
             }
         }
 
