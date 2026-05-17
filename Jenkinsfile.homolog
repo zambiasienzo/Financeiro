@@ -1,11 +1,30 @@
 pipeline {
     agent any
 
-    stages {
+    environment {
+        DB_CONTAINER = 'db_homolog'
+        APP_CONTAINER = 'app_homolog'
+        DB_PORT = '5433'
+        DB_NAME = 'financeiro_homolog'
+        DB_USER = 'user'
+        DB_PASS = 'pass'
+    }
 
+    stages {
         stage('Clonar projeto') {
             steps {
                 git branch: 'main', url: 'https://github.com/zambiasienzo/Financeiro.git'
+            }
+        }
+
+        stage('Start Banco Homolog') {
+            steps {
+                // Se o container já existir, não remove
+                sh "docker inspect ${DB_CONTAINER} >/dev/null 2>&1 || \\
+                    docker run -d --name ${DB_CONTAINER} -e POSTGRES_DB=${DB_NAME} \\
+                    -e POSTGRES_USER=${DB_USER} -e POSTGRES_PASSWORD=${DB_PASS} \\
+                    -p ${DB_PORT}:5432 postgres:15"
+                sh "sleep 10" // espera Postgres subir
             }
         }
 
@@ -21,20 +40,16 @@ pipeline {
             }
         }
 
-        stage('Subir Banco Homologação') {
+        stage('Build e Testes') {
             steps {
-                echo 'Subindo o Docker do banco de homologação...'
-                sh 'docker-compose -f docker-compose.homolog.yml up -d db'
-
-                // aguardar o banco iniciar completamente
-                sh 'sleep 15'
+                sh 'mvn clean package'
             }
         }
 
-        stage('Build e Testes') {
+        stage('Aplicar Migrations Flyway') {
             steps {
-                echo 'Rodando build e testes contra o banco da homologação...'
-                sh 'mvn clean package'
+                // Flyway só aplica novas migrations
+                sh 'mvn flyway:migrate -Phomolog'
             }
         }
 
@@ -45,11 +60,10 @@ pipeline {
             }
         }
 
-        stage('Deploy Homologação') {
+        stage('Deploy Homologacao') {
             steps {
-                echo 'Subindo aplicação no Docker de homologação...'
-                sh 'docker rm -f app_homolog || true'
-                sh 'docker-compose -p financeiro_homolog -f docker-compose.homolog.yml up -d app'
+                sh "docker rm -f ${APP_CONTAINER} || true"
+                sh "docker-compose -p financeiro_homolog -f docker-compose.homolog.yml up -d"
             }
         }
 
@@ -57,6 +71,12 @@ pipeline {
             steps {
                 sh 'docker ps'
             }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline concluído."
         }
     }
 }
