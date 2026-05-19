@@ -12,7 +12,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - dados_homolog:/var/lib/postgresql/data
 
   app:
     image: tomcat:9
@@ -30,3 +30,6 @@ services:
       - AMBIENTE=HOMOLOGAÇÃO
     depends_on:
       - db
+
+volumes:
+  dados_homolog:
