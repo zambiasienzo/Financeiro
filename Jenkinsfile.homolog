@@ -4,27 +4,12 @@ pipeline {
     environment {
         DB_CONTAINER = 'db_homolog'
         APP_CONTAINER = 'app_homolog'
-        DB_PORT = '5433'
-        DB_NAME = 'financeiro_homolog'
-        DB_USER = 'user'
-        DB_PASS = 'pass'
     }
 
     stages {
         stage('Clonar projeto') {
             steps {
                 git branch: 'main', url: 'https://github.com/zambiasienzo/Financeiro.git'
-            }
-        }
-
-        stage('Start Banco Homolog') {
-            steps {
-                // Se o container já existir, não remove
-                sh "docker inspect ${DB_CONTAINER} >/dev/null 2>&1 || \\
-                    docker run -d --name ${DB_CONTAINER} -e POSTGRES_DB=${DB_NAME} \\
-                    -e POSTGRES_USER=${DB_USER} -e POSTGRES_PASSWORD=${DB_PASS} \\
-                    -p ${DB_PORT}:5432 postgres:15"
-                sh "sleep 10" // espera Postgres subir
             }
         }
 
@@ -40,30 +25,46 @@ pipeline {
             }
         }
 
+        stage('Start Banco Homolog') {
+            steps {
+                sh '''
+                    docker-compose -p financeiro_homolog -f docker-compose.homolog.yml up -d db
+
+                    echo "Aguardando PostgreSQL iniciar..."
+                    sleep 10
+
+                    docker exec db_homolog pg_isready -U user -d financeiro_homolog
+                '''
+            }
+        }
+
+        stage('Aplicar Migrations Flyway') {
+            steps {
+                sh 'mvn flyway:migrate -Phomolog'
+            }
+        }
+
         stage('Build e Testes') {
             steps {
                 sh 'mvn clean package'
             }
         }
 
-        stage('Aplicar Migrations Flyway') {
-            steps {
-                // Flyway só aplica novas migrations
-                sh 'mvn flyway:migrate -Phomolog'
-            }
-        }
-
         stage('Preparar WAR') {
             steps {
-                sh 'mkdir -p app'
-                sh 'cp target/financeiro.war app/financeiro.war'
+                sh '''
+                    mkdir -p app
+                    cp target/financeiro.war app/financeiro.war
+                '''
             }
         }
 
         stage('Deploy Homologacao') {
             steps {
-                sh "docker rm -f ${APP_CONTAINER} || true"
-                sh "docker-compose -p financeiro_homolog -f docker-compose.homolog.yml up -d"
+                sh '''
+                    docker rm -f app_homolog || true
+                    docker-compose -p financeiro_homolog -f docker-compose.homolog.yml up -d app
+                '''
             }
         }
 
@@ -76,7 +77,7 @@ pipeline {
 
     post {
         always {
-            echo "Pipeline concluído."
+            echo "Pipeline de homologação concluído."
         }
     }
 }
