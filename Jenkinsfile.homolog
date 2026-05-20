@@ -46,7 +46,14 @@ pipeline {
 
         stage('Build e Testes') {
             steps {
-                sh 'mvn clean package'
+                sh '''
+                    DB_HOST=localhost \
+                    DB_PORT=5433 \
+                    DB_NAME=financeiro_homolog \
+                    DB_USER=user \
+                    DB_PASS=pass \
+                    mvn clean package
+                '''
             }
         }
 
