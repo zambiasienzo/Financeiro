@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        DB_CONTAINER = 'db_prod'
+        APP_CONTAINER = 'app_prod'
+    }
+
     stages {
         stage('Clonar projeto') {
             steps {
@@ -20,23 +25,53 @@ pipeline {
             }
         }
 
+        stage('Start Banco Producao') {
+            steps {
+                sh '''
+                    docker-compose -p financeiro_prod -f docker-compose.prod.yml up -d db
+
+                    echo "Aguardando PostgreSQL iniciar..."
+                    until docker exec db_prod pg_isready -U user -d financeiro_prod; do
+                        sleep 2
+                    done
+                '''
+            }
+        }
+
+        stage('Aplicar Migrations Flyway') {
+            steps {
+                sh 'mvn flyway:migrate -Pprod'
+            }
+        }
+
         stage('Build e Testes') {
             steps {
-                sh 'mvn clean package'
+                sh '''
+                    DB_HOST=localhost \
+                    DB_PORT=5434 \
+                    DB_NAME=financeiro_prod \
+                    DB_USER=user \
+                    DB_PASS=pass \
+                    mvn clean package
+                '''
             }
         }
 
         stage('Preparar WAR') {
             steps {
-                sh 'mkdir -p app'
-                sh 'cp target/financeiro.war app/financeiro.war'
+                sh '''
+                    mkdir -p app
+                    cp target/financeiro.war app/financeiro.war
+                '''
             }
         }
 
         stage('Deploy Producao') {
             steps {
-                sh 'docker rm -f app_prod || true'
-                sh 'docker-compose -p financeiro_prod -f docker-compose.prod.yml up -d'
+                sh '''
+                    docker rm -f app_prod || true
+                    docker-compose -p financeiro_prod -f docker-compose.prod.yml up -d app
+                '''
             }
         }
 
@@ -44,6 +79,12 @@ pipeline {
             steps {
                 sh 'docker ps'
             }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline de produção concluído."
         }
     }
 }
