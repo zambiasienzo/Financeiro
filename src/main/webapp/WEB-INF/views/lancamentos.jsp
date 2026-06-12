@@ -209,7 +209,7 @@
     Ambiente: <%= ambiente %>
 </div>
 <header>
-    <div class="brand">💰 FinançasPro</div>
+    <div class="brand">FinançasPro</div>
     <div class="user-info">
         <span>Olá, <strong><%= usuario.getNome() %></strong></span>
         <a href="${pageContext.request.contextPath}/logout" class="btn-logout">Sair</a>
@@ -219,7 +219,7 @@
 <main>
 
     <div class="main-top">
-        <h2>Painel de teste</h2>
+        <h2>Painel de Lançamentos</h2>
 
         <form method="get" action="${pageContext.request.contextPath}/lancamentos" class="filtro-form">
             <select name="situacao" class="filtro-input">
