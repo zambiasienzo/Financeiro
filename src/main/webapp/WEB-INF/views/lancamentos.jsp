@@ -219,7 +219,7 @@
 <main>
 
     <div class="main-top">
-        <h2>Painel de Lançamentos</h2>
+        <h2>Painel de teste</h2>
 
         <form method="get" action="${pageContext.request.contextPath}/lancamentos" class="filtro-form">
             <select name="situacao" class="filtro-input">
